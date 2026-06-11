@@ -1,0 +1,10 @@
+{
+  "domain": "ge_eltariff",
+  "name": "Göteborg Energi El-tariff",
+  "version": "1.0.0",
+  "documentation": "https://github.com/MaxwellErnst/ge_eltariff",
+  "issue_tracker": "https://github.com/MaxwellErnst/ge_eltariff/issues",
+  "requirements": [],
+  "codeowners": ["@MaxwellErnst"],
+  "iot_class": "cloud_polling"
+}
