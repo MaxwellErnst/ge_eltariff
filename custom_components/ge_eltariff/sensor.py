@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import aiohttp
 import async_timeout
+import logging
 from datetime import datetime, timezone
 
 from homeassistant.components.sensor import SensorEntity
@@ -11,19 +12,23 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import API_URL, DOMAIN
 
+_LOGGER = logging.getLogger(__name__)
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    entities = [
+
+    sensors = [
         GETariffSensor("current_price"),
         GETariffSensor("next_price"),
         GETariffSensor("current_level"),
         GETariffSensor("current_level_text"),
     ]
-    async_add_entities(entities, True)
+
+    async_add_entities(sensors, True)
 
 
 class GETariffSensor(SensorEntity):
@@ -34,6 +39,56 @@ class GETariffSensor(SensorEntity):
         self._state = None
 
     @property
+    def state(self):
+        return self._state
+
+    async def async_update(self) -> None:
+        try:
+            async with aiohttp.ClientSession() as session:
+                with async_timeout.timeout(10):
+                    resp = await session.get(API_URL)
+
+                    if resp.status != 200:
+                        _LOGGER.error("GE API returned status %s", resp.status)
+                        self._state = None
+                        return
+
+                    data = await resp.json()
+
+        except Exception as e:
+            _LOGGER.error("Error fetching GE tariff data: %s", e)
+            self._state = None
+            return
+
+        tariffs = data["tariffs"][0]["prices"]
+        now = datetime.now(timezone.utc)
+
+        current = None
+        next_price = None
+
+        for t in tariffs:
+            start = datetime.fromisoformat(t["startTime"].replace("Z", "+00:00"))
+            end = datetime.fromisoformat(t["endTime"].replace("Z", "+00:00"))
+
+            if start <= now < end:
+                current = t
+
+            if start > now and next_price is None:
+                next_price = t
+
+        if self._type == "current_price":
+            self._state = current["price"] if current else None
+
+        elif self._type == "next_price":
+            self._state = next_price["price"] if next_price else None
+
+        elif self._type == "current_level":
+            self._state = current["level"] if current else None
+
+        elif self._type == "current_level_text":
+            lvl = current["level"] if current else None
+            mapping = {"HIGH": "Höglast", "LOW": "Låglast", "NORMAL": "Normal"}
+            self._state = mapping.get(lvl, "Okänd")
     def name(self):
         return self._attr_name
 
