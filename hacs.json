@@ -1,0 +1,8 @@
+{
+  "name": "Göteborg Energi El-tariff",
+  "content_in_root": false,
+  "domains": ["sensor"],
+  "iot_class": "cloud_polling",
+  "homeassistant": "2023.0.0",
+  "render_readme": true
+}
