@@ -1,0 +1,12 @@
+{
+  "title": "Göteborg Energi El-tariff",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Göteborg Energi El-tariff",
+        "description": "Lägg till Göteborg Energi el-tariff",
+        "data": {}
+      }
+    }
+  }
+}
