@@ -1,0 +1,11 @@
+{
+  "title": "Göteborg Energi El-tariff",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Lägg till Göteborg Energi El-tariff",
+        "description": "Installera integrationen för att visa nätavgifter och lastnivåer."
+      }
+    }
+  }
+}
