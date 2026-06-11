@@ -1,3 +1,12 @@
 {
-  "title": "Göteborg Energi El-tariff"
+  "title": "Göteborg Energi Grid Tariff",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuration",
+        "description": "Add Göteborg Energi grid tariff",
+        "data": {}
+      }
+    }
+  }
 }
